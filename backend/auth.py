@@ -1,21 +1,11 @@
 """
-Simple API-key auth, scoped to just the admin/debug endpoints.
+Simple API-key for the admin/debug endpoints.
 
-The public GET endpoints (site data, stats, daily rollups) stay open on
-purpose — this is an open-data dashboard, and putting a login in front of
-public river levels would defeat the point. This token only protects the
-handful of endpoints that either mutate state (triggering a poll) or leak
-internals (raw upstream responses) — the ones actually worth locking down
-if you deploy this somewhere public.
+This token protects the handful of endpoints that either mutate state (triggering a poll) or leak internals (raw upstream responses).
 
-Set ADMIN_API_KEY in a .env file (copy .env.example) or as a real
-environment variable. If it isn't set, protected endpoints refuse every
-request rather than silently letting everyone through — fail closed, not
-open.
+Set ADMIN_API_KEY in a .env file (copy .env.example) or as a real environment variable.
+If it isn't set then protected endpoints refuse every request.
 
-Note: because the frontend is a static site with visible source, this key
-is meant for your own use (curl, a cron job, a admin script) — never embed
-it in frontend JS, since anyone could read it out of the page source.
 """
 
 from __future__ import annotations
