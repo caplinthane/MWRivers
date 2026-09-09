@@ -1,0 +1,341 @@
+/*
+ * Palmy River Watch — styles
+ *
+ * Design tokens (colors + fonts) are declared once here as CSS custom
+ * properties and referenced everywhere else via var(...) — change a
+ * color in one place and it updates the whole site.
+ *
+ *   --font-heading  Space Grotesk  - page title, card titles
+ *   --font-mono     IBM Plex Mono  - numbers, timestamps, chart labels
+ *                                    (a monospace font for numbers gives
+ *                                    them an "instrument readout" feel,
+ *                                    fitting for gauge data)
+ *   --font-body     Archivo        - everything else
+ *
+ * --navy is the one deliberately bold, high-contrast color (logo, title
+ * underline, links) — distinct from the three trend colors (--amber,
+ * --willow, --river) used on cards, so branding and live-data-state never
+ * get visually confused with each other.
+ * --rain is a separate cool blue-grey used only for rainfall bars, kept
+ * deliberately distinct from the trend colors since rain isn't a "trend"
+ * in the same sense flow is.
+ *
+ * LAYOUT: <body> is itself the page grid (see the "Page layout" section
+ * below) — header and .map-section sit in a left sidebar column, main
+ * (the cards) sits in a wider column to its right. This only works
+ * because header/.map-section/main/footer are direct children of <body>
+ * in index.html; if you nest them in a wrapper div you'll need to make
+ * that wrapper the grid instead.
+ */
+
+:root {
+  --paper: #FFFFFF;
+  --card: #FFFFFF;
+  --ink: #14181A;
+  --ink-muted: #55605C;
+  --border: #C7CFC9;
+  --navy: #1D3461;
+  --river: #1C7C93;
+  --willow: #3F8361;
+  --amber: #B8791F;
+  --amber-tint: #F7ECDA;
+  --rain: #6B7FA3;
+
+  --font-heading: "Space Grotesk", "Arial Narrow", sans-serif;
+  --font-mono: "IBM Plex Mono", "Courier New", monospace;
+  --font-body: "Archivo", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+/* --- Page layout: sidebar (header + map) beside content (cards) --- */
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+
+  /* The faint grid pattern nods to a surveyor's/topographic map — fitting
+   * for an app about real geographic gauge locations. Two overlapping
+   * repeating-linear-gradients (one horizontal, one vertical) draw the
+   * grid; background-color sits underneath as its own layer since CSS
+   * stacks multiple background-images with the first listed on top. */
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(29,52,97,0.09) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(90deg, rgba(29,52,97,0.09) 0 1px, transparent 1px 28px);
+
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  grid-template-areas:
+    "sidebar-a content"
+    "sidebar-b content"
+    "footer     footer";
+  align-content: start;
+  column-gap: 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+@media (max-width: 900px) {
+  /* Below this width there's no room for two columns — stack everything
+   * back into a single column in the original top-to-bottom order. */
+  body {
+    grid-template-columns: 1fr;
+    grid-template-areas: "sidebar-a" "sidebar-b" "content" "footer";
+  }
+}
+
+a { color: var(--navy); }
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--navy);
+  outline-offset: 2px;
+}
+
+/* --- Header (masthead, title, subtitle, safety disclaimer) --- */
+header { grid-area: sidebar-a; }
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.masthead img { width: 40px; height: 40px; flex-shrink: 0; }
+
+h1 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: -0.01em;
+  border-bottom: 3px solid var(--navy);
+  display: inline-block;
+  padding-bottom: 0.1rem;
+}
+
+.subtitle {
+  color: var(--ink-muted);
+  margin: 0.9rem 0 1rem;
+  line-height: 1.55;
+}
+
+.subtitle a { color: var(--navy); text-decoration: none; border-bottom: 1px solid currentColor; font-weight: 600; }
+.subtitle a:hover { opacity: 0.7; }
+
+.disclaimer {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  background: var(--amber-tint);
+  border: 1px solid var(--amber);
+  border-left: 4px solid var(--amber);
+  color: #6b4c14;
+  padding: 0.65rem 0.9rem;
+  border-radius: 2px;
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.disclaimer a { color: inherit; font-weight: 700; }
+
+/* --- Map section --- */
+.map-section { grid-area: sidebar-b; margin-top: 1.5rem; }
+
+.map-section h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 0 0.6rem;
+}
+
+.map-card {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--card);
+}
+
+/* Leaflet needs an explicit height on its container — it can't infer one
+ * from content the way most elements do. */
+.map-card #map { height: 340px; width: 100%; background: var(--paper); }
+
+/* A few overrides so Leaflet's default chrome (which ships with rounded
+ * corners and a system font) matches this project's sharp-corner,
+ * IBM-Plex-everywhere aesthetic instead of looking like a bolted-on
+ * third-party widget. */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  border-radius: 2px;
+  font-family: var(--font-body);
+}
+.leaflet-popup-content { font-size: 0.85rem; line-height: 1.4; }
+.leaflet-popup-content strong { font-family: var(--font-heading); }
+.leaflet-tooltip {
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+.leaflet-control-zoom a { border-radius: 2px !important; }
+
+/* --- Cards grid --- */
+main {
+  grid-area: content;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  align-content: start;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 2px;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--ink-muted);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 3px 3px 0 rgba(20,24,26,0.08);
+  border-color: #9BA6A0;
+}
+
+/* Trend color system: the card's left accent bar and its badge both use
+ * one of three colors depending on data.trend from the API (see
+ * app.js renderLoaded()). Badge text color is chosen per-color for
+ * contrast — amber needs dark text to pass WCAG AA, the other two pass
+ * fine with white (see the .trend-label rule below for why). */
+.card.trend-rising { border-left-color: var(--amber); }
+.card.trend-falling { border-left-color: var(--willow); }
+.card.trend-steady { border-left-color: var(--river); }
+
+.card h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 0 0.15rem;
+}
+
+.card .desc {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  margin: 0 0 0.9rem;
+  line-height: 1.4;
+}
+
+.card .latest {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.card .latest .value {
+  font-family: var(--font-mono);
+  font-size: 2.15rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.card .latest .unit {
+  color: var(--ink-muted);
+  font-size: 0.92rem;
+  font-family: var(--font-mono);
+}
+
+.card .trend-label {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+  /* Default: dark text. Amber (--amber, used for "rising") is light
+   * enough that white text on it only hits ~3.6:1 contrast, below the
+   * 4.5:1 WCAG AA minimum for normal-size text — so dark text is the
+   * default here, and the other two trend colors override to white
+   * below since they're dark enough to pass with white text instead. */
+  color: var(--ink);
+}
+
+.trend-rising .trend-label { background: var(--amber); }
+.trend-falling .trend-label { background: var(--willow); color: #FFFFFF; }
+.trend-steady .trend-label { background: var(--river); color: #FFFFFF; }
+
+.card .freshness {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.card .freshness.stale { color: var(--amber); font-weight: 700; }
+
+.card .error {
+  color: #a4402f;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.card .section-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  margin: 1.1rem 0 0.4rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card .section-label .rain-note {
+  text-transform: none;
+  letter-spacing: normal;
+  font-style: italic;
+  color: var(--ink-muted);
+  opacity: 0.8;
+}
+
+.card .no-history {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+canvas { max-height: 190px; }
+.long-term canvas { max-height: 130px; }
+
+/* --- Loading skeleton --- */
+.skeleton-line {
+  background: linear-gradient(90deg, #EDEFEC 25%, #E2E5E1 37%, #EDEFEC 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shine 1.4s ease infinite;
+  border-radius: 2px;
+}
+@keyframes skeleton-shine {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+.skeleton-value { height: 2.15rem; width: 55%; margin-bottom: 0.6rem; }
+.skeleton-chart { height: 190px; width: 100%; }
+
+footer {
+  grid-area: footer;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  padding-top: 2rem;
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.6rem; }
+  .card .latest .value { font-size: 1.7rem; }
+}

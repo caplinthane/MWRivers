@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Palmy River Watch</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <!-- Google Fonts: Space Grotesk (headings), Archivo (body), IBM Plex Mono
+       (numbers + chart labels) — see style.css for how each is used. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Chart.js is vendored locally in vendor/ rather than loaded from a
+       CDN, so the charts never depend on an external network request or
+       a specific CDN being reachable/unblocked. -->
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="vendor/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+  <!-- Leaflet (the map library) is vendored the same way. The map TILES
+       it displays are the one exception to this project's "no CDN" rule
+       — see the comment at the top of map-init.js for why. -->
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <script src="vendor/leaflet/leaflet.js"></script>
+</head>
+<body>
+  <header>
+    <div class="masthead">
+      <img src="favicon.svg" alt="" />
+      <h1>Palmy River Watch</h1>
+    </div>
+    <p class="subtitle">
+      Live river &amp; stream flow around Palmerston North, sourced from
+      <a href="https://www.horizons.govt.nz/environment/natural-hazards-and-flood-management/environmental-data-at-horizons" target="_blank" rel="noopener">
+        Horizons Regional Council's open environmental data
+      </a>.
+    </p>
+    <p class="disclaimer">
+      <span>
+        This is a personal/portfolio project, not an official flood warning
+        service. For real flood risk information, alerts, or emergencies, use
+        Horizons' own <a href="https://www.horizons.govt.nz/" target="_blank" rel="noopener">river alert system</a>
+        or call the Waterline on 0508 4 FLOOD.
+      </span>
+    </p>
+  </header>
+
+  <!-- Real map (Leaflet + OpenStreetMap), populated by map-init.js from
+       the live /api/sites response — see that file for details. -->
+  <section class="map-section">
+    <h2>Gauge locations</h2>
+    <div class="map-card">
+      <div id="map" role="img" aria-label="Map of the three monitored gauges around Palmerston North"></div>
+    </div>
+  </section>
+
+  <!-- app.js populates this with one card per site fetched from GET /api/sites -->
+  <main id="sites"></main>
+
+  <footer>
+    <p>Data: Horizons Regional Council Hilltop Server (public, no API key).</p>
+  </footer>
+
+  <script src="map-init.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Editors
+.vscode/
+.idea/
+.DS_Store
+
+# Env
+.env
+
+# Local database (runtime state, not source)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
