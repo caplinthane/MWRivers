@@ -1,18 +1,18 @@
-Full-stack app built on
+## Full-stack app built on
 [Horizons Regional Council's public environmental data](https://www.horizons.govt.nz/environment/natural-hazards-and-flood-management/environmental-data-at-horizons)
 
-Current screenshot of basic GUI in progress
+## Current screenshot of basic GUI in progress
 ![Screenshot of Palmy River Watch showing the gauge location map and three site cards with live readings, trend indicators, and 30-day history charts](docs/screenshot.png)
 
-Backend:
+## Backend:
   This app uses python + FastAPI + SQLite to poll the Horizons' Hilltop Server in
   the background. It then stores local history over time so you can view trends.
 
-Frontend:
+## Frontend:
   Plain HTML/CSS/JS, Chart.js, and Leaflet (WIP)
 
 
-Areas being measured in sites.py:
+## Areas being measured in sites.py:
 - Manawatū River at Teachers College 
 - Turitea Stream at Ngahere Park 
 - Kahuterawa Stream at Johnstons Rata 
@@ -56,14 +56,18 @@ Once the server is running you can open http://localhost:5500 in your browser.
 ## API endpoints
 
 | `GET /api/sites` | The configured sites |
+
 | `GET /api/sites/{key}/data?hours=48` | Recent and latest data readings, trends, and rainfall (if configured) from the local SQLite storage |
+
 | `GET /api/sites/{key}/stats?days=7` | Min, max, avg, or count over N days |
+
 | `GET /api/sites/{key}/daily?days=30` | The daily min/max/avg summary |
+
 | `POST /api/admin/poll-now`  | Manually triggers a poll (this skips the 15-min wait) |
+
 | `GET /api/debug/raw/{key}`  | Raw Hilltop XML response for debugging or troubleshooting |
 
-The last two apis (poll-now, raw) both require an `X-API-Key` header. Everything else is left open, currently the only endpoints
-worth gating are those two.
+The last two apis (poll-now, raw) both require an `X-API-Key` header. Every other API is open (for now).
 
 ### Setting up the admin key
 
